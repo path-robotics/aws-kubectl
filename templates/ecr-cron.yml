@@ -5,14 +5,24 @@ metadata:
 spec:
   concurrencyPolicy: Forbid
   schedule: "* */8 * * *"
-  successfulJobsHistoryLimit: 2
-  failedJobsHistoryLimit: 2
+  startingDeadlineSeconds: 200
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       backoffLimit: 4
       parallelism: 1
       template:
         spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: cell
+                        operator: In
+                        values:
+                          - master
           serviceAccountName: ecr-update-service-account
           terminationGracePeriodSeconds: 0
           restartPolicy: Never
